@@ -25,7 +25,10 @@
       <!-- Top-right header -->
       <div class="header-info">
         <div class="city">{{ city }}</div>
-        <div class="date">{{ currentDate }}</div>
+        <div class="date-row">
+          <div class="date">{{ currentDate }}</div>
+          <div class="hijri">{{  hijriDate }}</div>
+        </div>
       </div>
 
       <!-- Bottom-right mihrabs -->
@@ -45,7 +48,9 @@ export default {
     return {
       city: "Loading...",
       currentDate:"",
+      hijriDate:"",
       prayers: [
+        //{ name: "IMSAK",   time: "04:10 AM", icon: "https://img.icons8.com/ios/50/crescent-moon.png" },
         //{ name: "FAJR",    time: "04:20 AM", icon: "https://img.icons8.com/ios/50/sunrise.png" },
         //{ name: "DHUHR",   time: "12:05 PM", icon: "https://img.icons8.com/ios/50/sun--v1.png" },
         //{ name: "ASR",     time: "03:15 PM", icon: "https://img.icons8.com/ios/50/sunrise--v2.png" },
@@ -55,8 +60,20 @@ export default {
     };
   },
   mounted() {
+    const arabicDays = [
+      "Ahad",       // Sunday
+      "Ithnayn",    // Monday
+      "Thulatha",   // Tuesday
+      "Arbi'aa",    // Wednesday
+      "Khamees",    // Thursday
+      "Jumu'ah",    // Friday
+      "Sabt",       // Saturday
+    ];
+
     // Format and set the current date
     const now = new Date();
+    const dayIndex = now.getDay(); // 0 = Sunday
+    const arabicDay = arabicDays[dayIndex];
     this.currentDate = now.toLocaleDateString("en-US", {
       weekday: "long",
       year: "numeric",
@@ -83,7 +100,10 @@ export default {
           .then((res) => res.json())
           .then((prayerData) => {
             const t = prayerData.data.timings;
+            const hijri= prayerData.data.date.hijri;
+            this.hijriDate = `${arabicDay}, ${hijri.day} ${hijri.month.en} ${hijri.year} H`;
             this.prayers = [
+              { name: "IMSAK", time: t.Imsak, icon: "https://img.icons8.com/ios/50/crescent-moon.png" },
               { name: "FAJR", time: t.Fajr, icon: "https://img.icons8.com/ios/50/sunrise.png" },
               { name: "DHUHR", time: t.Dhuhr, icon: "https://img.icons8.com/ios/50/sun--v1.png" },
               { name: "ASR", time: t.Asr, icon: "https://img.icons8.com/ios/50/sunrise--v2.png" },
@@ -187,6 +207,18 @@ export default {
   right: 40px;
   text-align: right;
   z-index: 2;
+}
+
+.date-row {
+  display: flex;
+  flex-direction: column;
+  font-size: 14px;
+  color: #555;
+  margin-top: 4px;
+}
+
+.date, .hijri {
+  white-space: nowrap;
 }
 
 .city {
