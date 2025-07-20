@@ -65,7 +65,9 @@ export default {
     });
 
     // Fetch user's city using IP geolocation
-    fetch("https://ipapi.co/json/")
+    // https://ipapi.co/json/
+    // https://api.bigdatacloud.net/data/reverse-geocode-client
+    fetch("https://api.bigdatacloud.net/data/reverse-geocode-client/")
       .then((res) => res.json())
       .then((data) => {
         if (data && data.city) {
