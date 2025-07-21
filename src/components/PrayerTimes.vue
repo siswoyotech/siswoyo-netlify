@@ -251,17 +251,17 @@ export default {
 }
 
 .mihrab-center {
-  height: 250px;
-  width: 110px;
+  height: 100px;
+  width: 44px;
 }
 
 .mihrab-left {
-  height: 200px;
-  width: 90px;
+  height: 80px;
+  width: 36px;
 }
 
 .mihrab-right {
-  height: 170px;
-  width: 75px;
+  height: 68px;
+  width: 30px;
 }
 </style>
