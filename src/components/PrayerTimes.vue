@@ -96,7 +96,7 @@ export default {
         const lon = data.longitude;
 
         // 2. Fetch prayer times from Aladhan API
-        fetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lon}&method=2`)
+        fetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lon}&method=20`)
           .then((res) => res.json())
           .then((prayerData) => {
             const t = prayerData.data.timings;
