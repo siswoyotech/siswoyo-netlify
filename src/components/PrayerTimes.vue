@@ -12,7 +12,7 @@
         :key="index"
         class="prayer-row"
       >
-        <img :src="prayer.icon" class="icon" />
+        <img :src="prayer.icon" class="icon" :alt="`${prayer.name} icon`"/>
         <div class="prayer-text">
           <div class="name">{{ prayer.name }}</div>
           <div class="time">{{ prayer.time }}</div>
