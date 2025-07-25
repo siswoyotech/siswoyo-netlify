@@ -10,7 +10,7 @@
       <div
         v-for="(prayer, index) in prayers"
         :key="index"
-        class="prayer-row"
+        :class="['prayer-row', { upcoming: prayer.name === upcomingPrayer }]"
       >
         <img :src="prayer.icon" class="icon" :alt="`${prayer.name} icon`"/>
         <div class="prayer-text">
@@ -57,6 +57,7 @@ export default {
         //{ name: "MAGHRIB", time: "06:05 PM", icon: "https://img.icons8.com/ios/50/sunset--v1.png" },
         //{ name: "ISHA",    time: "07:15 PM", icon: "https://img.icons8.com/ios/50/bright-moon.png" },
       ],
+      upcomingPrayer: "",
     };
   },
   mounted() {
@@ -83,7 +84,7 @@ export default {
 
     // Fetch user's city using IP geolocation
     // https://ipapi.co/json/
-    // https://api.bigdatacloud.net/data/reverse-geocode-client
+    // https://api.bigdatacloud.net/data/reverse-geocode-client  -- sometime, we can't find the data
     fetch("https://ipapi.co/json/")
       .then((res) => res.json())
       .then((data) => {
@@ -110,6 +111,21 @@ export default {
               { name: "MAGHRIB", time: t.Maghrib, icon: "https://img.icons8.com/ios/50/sunset--v1.png" },
               { name: "ISHA", time: t.Isha, icon: "https://img.icons8.com/ios/50/bright-moon.png" },
             ];
+            const nowTime = new Date();
+            const formatTime = (timeStr) => {
+              const [h, m] = timeStr.split(":");
+              const date = new Date();
+              date.setHours(parseInt(h), parseInt(m), 0, 0);
+              return date;
+            };
+
+            for (let i = 0; i < this.prayers.length; i++) {
+              const prayerTime = formatTime(this.prayers[i].time);
+              if (nowTime < prayerTime) {
+                this.upcomingPrayer = this.prayers[i].name;
+                break;
+              }
+            }
         })
         .catch(() => {
             console.error("Failed to fetch prayer times");
@@ -168,6 +184,11 @@ export default {
   width: 100%;
   box-sizing: border-box;
   margin-bottom: 15px;
+}
+
+.upcoming {
+  border: 3px solid #0a5f2e;
+  box-shadow: 0 0 10px #0a5f2e;
 }
 
 .icon {
