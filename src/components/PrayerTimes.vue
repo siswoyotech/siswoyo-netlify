@@ -47,33 +47,16 @@ export default {
   data() {
     return {
       city: "Loading...",
-      currentDate:"",
-      hijriDate:"",
-      prayers: [
-        //{ name: "IMSAK",   time: "04:10 AM", icon: "https://img.icons8.com/ios/50/crescent-moon.png" },
-        //{ name: "FAJR",    time: "04:20 AM", icon: "https://img.icons8.com/ios/50/sunrise.png" },
-        //{ name: "DHUHR",   time: "12:05 PM", icon: "https://img.icons8.com/ios/50/sun--v1.png" },
-        //{ name: "ASR",     time: "03:15 PM", icon: "https://img.icons8.com/ios/50/sunrise--v2.png" },
-        //{ name: "MAGHRIB", time: "06:05 PM", icon: "https://img.icons8.com/ios/50/sunset--v1.png" },
-        //{ name: "ISHA",    time: "07:15 PM", icon: "https://img.icons8.com/ios/50/bright-moon.png" },
-      ],
+      currentDate: "",
+      hijriDate: "",
+      prayers: [],
       upcomingPrayer: "",
     };
   },
   mounted() {
-    const arabicDays = [
-      "Ahad",       // Sunday
-      "Ithnayn",    // Monday
-      "Thulatha",   // Tuesday
-      "Arbi'aa",    // Wednesday
-      "Khamees",    // Thursday
-      "Jumu'ah",    // Friday
-      "Sabt",       // Saturday
-    ];
-
-    // Format and set the current date
+    const arabicDays = ["Ahad", "Ithnayn", "Thulatha", "Arbi'aa", "Khamees", "Jumu'ah", "Sabt"];
     const now = new Date();
-    const dayIndex = now.getDay(); // 0 = Sunday
+    const dayIndex = now.getDay();
     const arabicDay = arabicDays[dayIndex];
     this.currentDate = now.toLocaleDateString("en-US", {
       weekday: "long",
@@ -82,58 +65,79 @@ export default {
       day: "numeric",
     });
 
-    // Fetch user's city using IP geolocation
-    // https://ipapi.co/json/
-    // https://api.bigdatacloud.net/data/reverse-geocode-client  -- sometime, we can't find the data
-    fetch("https://ipapi.co/json/")
-      .then((res) => res.json())
-      .then((data) => {
-        if (data && data.city) {
-          this.city = data.city.toUpperCase();
-        }
-      
-    
-        const lat = data.latitude;
-        const lon = data.longitude;
+    const fetchPrayerTimes = (lat, lon) => {
+      fetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lon}&method=20`)
+        .then((res) => res.json())
+        .then((prayerData) => {
+          const t = prayerData.data.timings;
+          const hijri = prayerData.data.date.hijri;
+          this.hijriDate = `${arabicDay}, ${hijri.day} ${hijri.month.en} ${hijri.year} H`;
+          this.prayers = [
+            { name: "IMSAK", time: t.Imsak, icon: "https://img.icons8.com/ios/50/crescent-moon.png" },
+            { name: "FAJR", time: t.Fajr, icon: "https://img.icons8.com/ios/50/sunrise.png" },
+            { name: "DHUHR", time: t.Dhuhr, icon: "https://img.icons8.com/ios/50/sun--v1.png" },
+            { name: "ASR", time: t.Asr, icon: "https://img.icons8.com/ios/50/sunrise--v2.png" },
+            { name: "MAGHRIB", time: t.Maghrib, icon: "https://img.icons8.com/ios/50/sunset--v1.png" },
+            { name: "ISHA", time: t.Isha, icon: "https://img.icons8.com/ios/50/bright-moon.png" },
+          ];
 
-        // 2. Fetch prayer times from Aladhan API
-        fetch(`https://api.aladhan.com/v1/timings?latitude=${lat}&longitude=${lon}&method=20`)
-          .then((res) => res.json())
-          .then((prayerData) => {
-            const t = prayerData.data.timings;
-            const hijri= prayerData.data.date.hijri;
-            this.hijriDate = `${arabicDay}, ${hijri.day} ${hijri.month.en} ${hijri.year} H`;
-            this.prayers = [
-              { name: "IMSAK", time: t.Imsak, icon: "https://img.icons8.com/ios/50/crescent-moon.png" },
-              { name: "FAJR", time: t.Fajr, icon: "https://img.icons8.com/ios/50/sunrise.png" },
-              { name: "DHUHR", time: t.Dhuhr, icon: "https://img.icons8.com/ios/50/sun--v1.png" },
-              { name: "ASR", time: t.Asr, icon: "https://img.icons8.com/ios/50/sunrise--v2.png" },
-              { name: "MAGHRIB", time: t.Maghrib, icon: "https://img.icons8.com/ios/50/sunset--v1.png" },
-              { name: "ISHA", time: t.Isha, icon: "https://img.icons8.com/ios/50/bright-moon.png" },
-            ];
-            const nowTime = new Date();
-            const formatTime = (timeStr) => {
-              const [h, m] = timeStr.split(":");
-              const date = new Date();
-              date.setHours(parseInt(h), parseInt(m), 0, 0);
-              return date;
-            };
+          const nowTime = new Date();
+          const formatTime = (timeStr) => {
+            const [h, m] = timeStr.split(":");
+            const date = new Date();
+            date.setHours(parseInt(h), parseInt(m), 0, 0);
+            return date;
+          };
 
-            for (let i = 0; i < this.prayers.length; i++) {
-              const prayerTime = formatTime(this.prayers[i].time);
-              if (nowTime < prayerTime) {
-                this.upcomingPrayer = this.prayers[i].name;
-                break;
-              }
+          for (let i = 0; i < this.prayers.length; i++) {
+            const prayerTime = formatTime(this.prayers[i].time);
+            if (nowTime < prayerTime) {
+              this.upcomingPrayer = this.prayers[i].name;
+              break;
             }
-        })
-        .catch(() => {
-            console.error("Failed to fetch prayer times");
-          });
-    })
-    .catch(() => {
-      this.city = "Unknown City";
-    });
+          }
+        });
+    };
+
+    const reverseGeocode = (lat, lon) => {
+      fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`)
+        .then((res) => res.json())
+        .then((loc) => {
+          if (loc && loc.address) {
+            this.city = (loc.address.city || loc.address.town || loc.address.village || loc.display_name || "Unknown City").toUpperCase();
+          } else {
+            this.city = "Unknown City";
+          }
+        });
+    };
+
+    const handleLocation = (lat, lon) => {
+      reverseGeocode(lat, lon);
+      fetchPrayerTimes(lat, lon);
+    };
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const lat = position.coords.latitude;
+          const lon = position.coords.longitude;
+          handleLocation(lat, lon);
+        },
+        () => {
+          // fallback to IP-based location
+          fetch("https://ipapi.co/json/")
+            .then((res) => res.json())
+            .then((data) => {
+              handleLocation(data.latitude, data.longitude);
+            })
+            .catch(() => {
+              this.city = "Unknown City";
+            });
+        }
+      );
+    } else {
+      this.city = "Geolocation Not Supported";
+    }
   },
 };
 </script>
