@@ -99,7 +99,7 @@ export default {
               break;
             }
           }
-          if (!found && this.prayers.length >0) {
+          if (!found && this.prayers.length > 0) {
             this.upcomingPrayer = this.prayers[0].name;  //IMSAK of next day
           }
         });
