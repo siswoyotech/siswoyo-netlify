@@ -89,12 +89,18 @@ export default {
             return date;
           };
 
+          let found = false;
+
           for (let i = 0; i < this.prayers.length; i++) {
             const prayerTime = formatTime(this.prayers[i].time);
             if (nowTime < prayerTime) {
               this.upcomingPrayer = this.prayers[i].name;
+              found = true;
               break;
             }
+          }
+          if (!found && this.prayers.length >0) {
+            this.upcomingPrayer = this.prayers[0].name;  //IMSAK of next day
           }
         });
     };
