@@ -100,7 +100,7 @@ export default {
             }
           }
           if (!found && this.prayers.length > 0) {
-            this.upcomingPrayer = this.prayers[0].name;  //IMSAK of next day
+            this.upcomingPrayer = this.prayers[1].name;  //Fajr of next day
           }
         });
     };
