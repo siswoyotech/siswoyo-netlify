@@ -31,3 +31,9 @@ coverage
 
 # TO DO
 .TODO
+
+# Local Netlify folder
+.netlify
+
+# Env
+.env
