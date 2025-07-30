@@ -1,14 +1,9 @@
 <template>
-  <PrayerTimes />
+  <router-view />
 </template>
 
 <script>
-import PrayerTimes from './components/PrayerTimes.vue';
-
 export default {
-  name: 'App',
-  components: {
-    PrayerTimes
-  }
+  name: 'App'
 }
 </script>
