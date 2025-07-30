@@ -22,6 +22,7 @@
     <div class="right-panel">
       <div class="header-info">
         <div class="city">{{ mosqueData.mosque_name }}</div>
+        <div class="address">{{ mosqueData.address }}</div>
         <div class="date-row">
           <div class="date">{{ currentDate }}</div>
           <div class="hijri">{{ hijriDate }}</div>
