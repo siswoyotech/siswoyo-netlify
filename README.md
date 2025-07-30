@@ -29,3 +29,8 @@ pnpm build
 ```
 
 🌐 Live Demo: siswoyo.netlify.app
+
+
+Deploy live:
+
+netlify deploy --prod
