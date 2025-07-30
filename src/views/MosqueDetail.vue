@@ -19,7 +19,7 @@
       </div>
     </div>
 
-    <div class="right-panel">
+    <div class="right-panel" :style="{ backgroundImage: `url(${mosqueData.image_url})`, backgroundRepeat: 'no-repeat', backgroundPosition: 'center center', backgroundSize: 'cover' }">
       <div class="header-info">
         <div class="city">{{ mosqueData.mosque_name }}</div>
         <div class="address">{{ mosqueData.address }}</div>
